@@ -50,7 +50,7 @@ const bgImages = Array(40).fill(images).flat()
       </p>
 
       <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold mt-4">
-        SHADLE OUR STUGGEL
+        SHADLE OUR STRUGGLE
         <span class="text-red-500">25</span>
       </h1>
 

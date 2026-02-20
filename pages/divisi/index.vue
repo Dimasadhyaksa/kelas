@@ -166,7 +166,7 @@ const divisions = [
 <style scoped>
 
 /* ===== STAT CARD ===== */
-.stat-card {
+/* .stat-card {
   @apply bg-white/5 backdrop-blur-xl border border-white/10
          rounded-2xl p-8 text-center transition;
 }
@@ -177,6 +177,6 @@ const divisions = [
 
 .stat-card p {
   @apply text-gray-400 mt-2 text-sm;
-}
+} */
 
 </style>
