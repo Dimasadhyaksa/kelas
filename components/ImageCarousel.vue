@@ -7,7 +7,7 @@
         Dokumentasi <span class="text-red-500">Kegiatan</span>
       </h2>
 
-      <!-- Gradient Fade -->
+      <!-- Fade Edge -->
       <div class="fade-left"></div>
       <div class="fade-right"></div>
 
@@ -19,7 +19,7 @@
             :key="'top-' + i"
             class="carousel-item"
           >
-            <img :src="img" />
+            <img :src="img" loading="lazy" />
           </div>
         </div>
       </div>
@@ -32,25 +32,88 @@
             :key="'bottom-' + i"
             class="carousel-item"
           >
-            <img :src="img" />
+            <img :src="img" loading="lazy" />
           </div>
         </div>
       </div>
-
     </div>
+    <!-- BUTTON -->
+<div class="flex justify-center mt-14">
+  <NuxtLink
+    to="/galeri"
+    class="group relative px-10 py-3 rounded-full
+           border border-white/15
+           bg-white/[0.03]
+           backdrop-blur-xl
+           text-white tracking-wide
+           transition-all duration-300
+           hover:bg-red-500/10
+           hover:border-red-500/40
+           hover:shadow-[0_0_30px_rgba(239,68,68,0.35)]"
+  >
+    <span class="relative z-10 flex items-center gap-2">
+      Selengkapnya
+      <span
+        class="transition-transform duration-300 group-hover:translate-x-1"
+      >
+        →
+      </span>
+    </span>
+
+    <!-- glow layer -->
+    <div
+      class="absolute inset-0 rounded-full opacity-0
+             group-hover:opacity-100
+             bg-gradient-to-r
+             from-transparent via-red-500/20 to-transparent
+             blur-xl transition duration-500">
+    </div>
+  </NuxtLink>
+</div>
+
   </section>
 </template>
 
 <script setup>
-const images = [
-  "/images/foto1.jpg",
-  "/images/foto2.jpg",
-  "/images/foto3.jpg",
-  "/images/foto4.jpg",
-  "/images/foto5.jpg",
-]
+import { ref, computed, onMounted } from "vue"
+import { createClient } from "@supabase/supabase-js"
 
-const duplicatedImages = [...images, ...images]
+const config = useRuntimeConfig()
+
+const supabase = createClient(
+  config.public.supabaseUrl,
+  config.public.supabaseAnonKey
+)
+
+const images = ref([])
+
+/* ======================
+   FETCH DATA SUPABASE
+====================== */
+const fetchImages = async () => {
+  const { data, error } = await supabase
+    .from("images") // ✅ NAMA TABLE KAMU
+    .select("image") // ✅ KOLOM IMAGE
+    .order("id", { ascending: true })
+
+  if (error) {
+    console.error("Fetch images error:", error)
+    return
+  }
+
+  // ambil hanya URL gambar
+  images.value = data.map(item => item.image)
+}
+
+onMounted(fetchImages)
+
+/* ======================
+   DUPLICATE FOR LOOP
+====================== */
+const duplicatedImages = computed(() => [
+  ...images.value,
+  ...images.value
+])
 </script>
 
 <style scoped>
@@ -65,7 +128,6 @@ const duplicatedImages = [...images, ...images]
   width: max-content;
 }
 
-/* ITEM */
 .carousel-item {
   width: 260px;
   height: 170px;
@@ -86,7 +148,7 @@ const duplicatedImages = [...images, ...images]
   transform: scale(1.07);
 }
 
-/* ANIMATION */
+/* animation */
 @keyframes scrollLeft {
   from { transform: translateX(-50%); }
   to { transform: translateX(0); }
@@ -105,12 +167,11 @@ const duplicatedImages = [...images, ...images]
   animation: scrollRight 35s linear infinite;
 }
 
-/* Pause hover */
 .carousel-wrapper:hover .carousel-track {
   animation-play-state: paused;
 }
 
-/* Fade Edges */
+/* fade */
 .fade-left,
 .fade-right {
   position: absolute;

@@ -1,3 +1,52 @@
+<script setup>
+import { ref, onMounted } from "vue"
+
+const sectionRef = ref(null)
+const hasAnimated = ref(false)
+
+const stats = ref([
+  { value: 36, label: "Anggota Aktif", display: 0 },
+  { value: 10, label: "Event", display: 0 },
+  { value: 100, label: "Dokumentasi", display: 0 },
+])
+
+const animateCounter = () => {
+  stats.value.forEach((stat) => {
+    let start = 0
+    const duration = 1500
+    const increment = stat.value / (duration / 16)
+
+    const counter = setInterval(() => {
+      start += increment
+      if (start >= stat.value) {
+        stat.display = stat.value
+        clearInterval(counter)
+      } else {
+        stat.display = Math.floor(start)
+      }
+    }, 16)
+  })
+}
+
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !hasAnimated.value) {
+          animateCounter()
+          hasAnimated.value = true
+        }
+      })
+    },
+    { threshold: 0.5 } // 50% terlihat baru animasi
+  )
+
+  if (sectionRef.value) {
+    observer.observe(sectionRef.value)
+  }
+})
+</script>
+
 <template>
   <section class="relative bg-[#0b0b0f] text-white pt-32 pb-28 overflow-hidden">
 
@@ -57,24 +106,22 @@
           </p>
 
           <!-- Stats -->
-          <div class="grid grid-cols-3 gap-6">
+          <div ref="sectionRef" class="grid grid-cols-3 gap-6">
 
-            <div class="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 text-center">
-              <h3 class="text-3xl font-bold text-red-500">36+</h3>
-              <p class="text-gray-400 text-sm mt-2">Anggota Aktif</p>
-            </div>
-
-            <div class="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 text-center">
-              <h3 class="text-3xl font-bold text-red-500">10+</h3>
-              <p class="text-gray-400 text-sm mt-2">Event</p>
-            </div>
-
-            <div class="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 text-center">
-              <h3 class="text-3xl font-bold text-red-500">100+</h3>
-              <p class="text-gray-400 text-sm mt-2">Dokumentasi</p>
-            </div>
-
+          <div
+            v-for="(stat, index) in stats"
+            :key="index"
+            class="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 text-center"
+          >
+            <h3 class="text-3xl font-bold text-red-500">
+              {{ stat.display }}+
+            </h3>
+            <p class="text-gray-400 text-sm mt-2">
+              {{ stat.label }}
+            </p>
           </div>
+
+        </div>
 
         </div>
 
